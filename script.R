@@ -57,12 +57,13 @@ while(jour <= nbJour){
     timeLeftFem[num_mortes] <- round(rnorm(length(num_mortes) , mean = lifeTime , sd=1))
     cycle[num_mortes] <- sample(0:dCM, length(num_mortes), replace=T) # il faut changer, les femelles naissent au début du cycle
     gestation[num_mortes] <- 1
+    numPartnFem[num_mortes] <- 0
     
     ## Les mâles se reproduisent
     num_morts <- numMal[timeLeftMal==0]
     timeLeftMal[num_morts] <- round(rnorm(length(num_morts) , mean = lifeTime , sd=1))
     resplenish[num_morts] <- 0 # taux de spermenégatif ?    
-    
+    numPartnMal[num_morts] <- 0
     
 	
 	
@@ -72,26 +73,32 @@ while(jour <= nbJour){
 
     while(iTemps <= temps & sum(gestation==0) > 0   ){
 
-        pickedFem <- samplefx(numFem[gestation==0 & timeLeftFem >0],1,replace = F) #contient le numéro de la femelle choisie
-        pickedMal <- samplefx(numMal[resplenish==1 & timeLeftMal >0],1,replace = F) # contient le numéro de la femelle
+      
+      if(   sum((resplenish==1 & timeLeftMal >0  &  (numPartnMal == 0)  )) >0  & sum((gestation==0 & timeLeftFem >0 & numPartnFem == 0)) >0  ){
+        pickedFem <- samplefx(numFem[gestation==0 & timeLeftFem >0 & numPartnFem == 0],1,replace = F) #contient le numéro de la femelle choisie
+        pickedMal <- samplefx(numMal[resplenish==1 & timeLeftMal >0],1,replace = F) # contient le numéro du male choisi
 
 		#print(timeLeftFem[pickedFem])
 
         gestation[pickedFem] <- -1
         cycle[pickedFem] <- dureeGestation +1
+        numPartnFem[pickedFem] <- 0
 
         resplenish[pickedMal] <- 0
+        numPartnMal[pickedMal] <- 0
+        
+      }
 
 
         
         iTemps <- iTemps +1
     }
 
-
-
-	#print(cycle)
-	#print(timeLeftFem)
-
+    print(numPartnFem)
+    print(numPartnMal)
+    print("")
+    
+    
     timeLeftMal <- timeLeftMal - 1
     timeLeftMal[timeLeftMal < 0] <- 0
     timeLeftFem <- timeLeftFem - 1
