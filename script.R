@@ -38,10 +38,10 @@ resplenish[resplenish < 0] <- 0
 
 jour <- 1 # compteur de jours
 while(jour <= nbJour){
-	
-	#print(cycle == 0 & gestation == -1)
-	
-	    
+    
+                                        #print(cycle == 0 & gestation == -1)
+    
+    
     cycle <- cycle - 1 # les femelles évoluent dans le cycle
     gestation[cycle == 0] <- 0
     cycle[cycle < 0] <- dureeCycle
@@ -49,22 +49,21 @@ while(jour <= nbJour){
 
     resplenish <- resplenish + 0.1 # les males se resplenish
     resplenish[resplenish > 1] <- 1
-	
-	
-	## Les femelles se reproduisent
-	
-	num_mortes <- numFem[timeLeftFem==0]
-	timeLeftFem[num_mortes] <- round(rnorm(length(num_mortes) , mean = lifeTime , sd=1))
-	cycle[num_mortes] <- sample(0:dCM, length(num_mortes), replace=T)
-	gestation[num_mortes] <- 1
-	
-	## Les mâles se reproduisent
-	num_morts <- numMal[timeLeftMal==0]
-	timeLeftMal[num_morts] <- round(rnorm(length(num_morts) , mean = lifeTime , sd=1))
-	resplenish[num_morts] <- 0
-	
-	
-	
+    
+    
+    ## Les femelles se reproduisent
+    
+    num_mortes <- numFem[timeLeftFem==0]
+    timeLeftFem[num_mortes] <- round(rnorm(length(num_mortes) , mean = lifeTime , sd=1))
+    cycle[num_mortes] <- sample(0:dCM, length(num_mortes), replace=T) # il faut changer, les femelles naissent au début du cycle
+    gestation[num_mortes] <- 1
+    
+    ## Les mâles se reproduisent
+    num_morts <- numMal[timeLeftMal==0]
+    timeLeftMal[num_morts] <- round(rnorm(length(num_morts) , mean = lifeTime , sd=1))
+    resplenish[num_morts] <- 0 # taux de spermenégatif ?    
+    
+    
 	
 	
     temps <- round(0.7*nbMal) # contient le nombre d'essai max de mate
