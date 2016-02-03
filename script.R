@@ -9,7 +9,7 @@ samplefx <- function(x, size = length(x), replace = FALSE) {
 }
 
 
-nbJour <- 100 # nombre de jour que dure la modélisation
+nbJour <- 30 # nombre de jour que dure la modélisation
 
 nbMal <- 10 # nombre de males dans l'experience
 numMal <- 1:10 # numéro representant les males
@@ -45,18 +45,13 @@ jour <- 1 # compteur de jours
 while(jour <= nbJour){
     
                                         #print(cycle == 0 & gestation == -1)
+    print("")
+    #print(gestation[1])
+    #print(cycle[1])
     
-    
-    cycle <- cycle - 1 # les femelles évoluent dans le cycle
-    gestation[cycle == 0 && gestation == 1] <- 0
-    cycle[cycle < 0] <- dureeCycle
-    
-
-    resplenish <- resplenish + resplDaily # les males se resplenish
-    resplenish[resplenish > 1] <- 1
 
     ## Accouplement
-    pretes <- numFem[gestation==0 && numPartnFem != 0]
+    pretes <- numFem[gestation==0 & numPartnFem != 0]
     gestation[pretes] <- -1
     cycle[pretes] <- dureeGestation
     copieNumPartnFem <- numPartnFem
@@ -71,7 +66,7 @@ while(jour <= nbJour){
     
     ## mise bas de femelles
 
-    if( sum(cycle == 0 && gestation == -1) ){
+    if( sum(cycle <= 0 & gestation == -1)>0 ){
 
         num_mortes <- numFem[timeLeftFem==0]
         timeLeftFem[num_mortes] <- round(rnorm(length(num_mortes) , mean = lifeTime , sd=1))
@@ -88,15 +83,20 @@ while(jour <= nbJour){
 
     
         ## les femelles ont mis bas
-        # Il faut s'occuper de ça
+        #cycle[cycle<=0 & gestation == -1] <- dureeCycle
+        #gestation[cycle<=0 & gestation == -1] <- 1
     
     }
-    
-    
-    temps <- round(0.7*nbMal) # contient le nombre d'essai max de mate
 
-    iTemps <- 1 #
+    miseBas <- cycle<=0 & gestation == -1
+    cycle[miseBas] <- dureeCycle
+    gestation[miseBas] <- 1    
 
+
+    temps <- nbMal
+
+    iTemps <- 1
+    
     while(iTemps <= temps & sum(numPartnFem==0) > 0 & sum(numPartnMal==0) ){ # on apparie les individus
 
         
@@ -106,31 +106,48 @@ while(jour <= nbJour){
 
                                         #print(timeLeftFem[pickedFem])
 
-            gestation[pickedFem] <- -1
-            cycle[pickedFem] <- dureeGestation +1
+            #gestation[pickedFem] <- -1
+            #cycle[pickedFem] <- dureeGestation +1
             numPartnFem[pickedFem] <- pickedMal
 
-            resplenish[pickedMal] <- 0 #il faut changer et mettre ça à l'acocuplement pas à l'appariement
+            #resplenish[pickedMal] <- 0 #il faut changer et mettre ça à l'acocuplement pas à l'appariement
             numPartnMal[pickedMal] <- pickedFem
             
         }
 
-
-        
         iTemps <- iTemps +1
     }
 
-    print("")
-    print(numPartnFem)
-    print(numPartnMal)
-    print(cycle)
-    print(gestation)
+    #print("")
+    #print(numPartnFem)
+    #print(numPartnMal)
+    #print(cycle)
+    #print(gestation)
     
     
     timeLeftMal <- timeLeftMal - 1
     timeLeftMal[timeLeftMal < 0] <- 0
     timeLeftFem <- timeLeftFem - 1
     timeLeftFem[timeLeftFem < 0] <- 0
+
+
+    print("")
+    print(cycle[1])
+    print(gestation[1])
+
+
+    cycle <- cycle - 1 # les femelles évoluent dans le cycle
+    gestation[cycle == 0 & gestation == 1] <- 0
+    cycle[cycle < 0] <- dureeCycle
+
+
+     ## les femelles ont mis bas
+    #cycle[cycle<=0 & gestation == -1] <- dureeCycle
+    #gestation[cycle<=0 & gestation == -1] <- 1
+    
+
+    resplenish <- resplenish + resplDaily # les males se resplenish
+    resplenish[resplenish > 1] <- 1
     
     jour <- jour+1
 }
