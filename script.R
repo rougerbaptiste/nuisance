@@ -8,6 +8,8 @@ samplefx <- function(x, size = length(x), replace = FALSE) {
     }
 }
 
+#pb
+
 
 nbJour <- 30 # nombre de jour que dure la modélisation
 
